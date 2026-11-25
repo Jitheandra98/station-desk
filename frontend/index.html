@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>STATION · Gold Desk</title>
+<link rel="stylesheet" href="/css/desk.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🜚</text></svg>">
+</head>
+<body>
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">◈</span>
+    <span class="wordmark">STATION</span>
+    <span class="sub">gold desk</span>
+  </div>
+  <nav class="switcher" id="symSwitch"></nav>
+  <nav class="switcher" id="tfSwitch"></nav>
+  <div class="topbar-right">
+    <button class="ghost-btn" id="labBtn">Lab</button>
+    <button class="ghost-btn" id="cfgBtn">Settings</button>
+    <div class="pill" id="sourcePill"><span class="dot live"></span><span id="sourceText">connecting</span></div>
+    <button class="ghost-btn" id="autoBtn" title="Arm auto-execution on ★ appointments">AUTO <span id="autoState">OFF</span></button>
+  </div>
+</header>
+
+<main>
+  <!-- ── hero ─────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-price">
+      <div class="label">XAU/USD · <span id="tfLabel">30m</span></div>
+      <div class="price-row">
+        <h1 id="price">—</h1>
+        <div class="delta" id="delta">—</div>
+      </div>
+      <div class="sub-metrics">
+        <span>day high <b id="dayHigh">—</b></span>
+        <span>day low <b id="dayLow">—</b></span>
+        <span>ATR <b id="atr">—</b></span>
+      </div>
+    </div>
+
+    <div class="hero-read glass" id="readCard">
+      <div class="read-head">
+        <span class="state-chip" id="readState">—</span>
+        <span class="session-chip" id="sessionChip">—</span>
+      </div>
+      <h2 id="readHeadline">Reading the tape…</h2>
+      <p id="readDetail">The desk is warming up.</p>
+      <div class="read-route">
+        <div class="route-leg up"><span>next up</span><b id="routeUp">—</b></div>
+        <div class="route-leg down"><span>next down</span><b id="routeDown">—</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── chart ────────────────────────────────────────────────────── -->
+  <section class="chart-card glass">
+    <div class="chart-head">
+      <div class="legend">
+        <span class="key demand"></span> demand station
+        <span class="key supply"></span> supply station
+        <span class="key pool"></span> resting liquidity
+        <span class="key star"></span> ★ appointment
+      </div>
+      <div class="chart-tools">
+        <button class="chip" data-layer="zones">zones</button>
+        <button class="chip" data-layer="pools">pools</button>
+        <button class="chip" data-layer="signals">signals</button>
+        <button class="chip" data-layer="trades">trades</button>
+      </div>
+    </div>
+    <canvas id="chart"></canvas>
+    <div class="chart-hint">drag to pan · scroll to zoom</div>
+  </section>
+
+  <!-- ── three columns ────────────────────────────────────────────── -->
+  <section class="columns">
+    <!-- route map -->
+    <div class="panel glass">
+      <h3>The route</h3>
+      <p class="panel-sub">where price can deliver from here</p>
+      <div id="routeList" class="route-list"></div>
+      <div class="route-foot">
+        <span id="poolsAbove">—</span>
+        <span id="poolsBelow">—</span>
+      </div>
+    </div>
+
+    <!-- ticket -->
+    <div class="panel glass">
+      <h3>Ticket</h3>
+      <p class="panel-sub">sized from risk, never from conviction</p>
+      <div class="ticket" id="ticket">
+        <div class="ticket-row"><span>side</span>
+          <div class="seg" id="sideSeg">
+            <button data-side="BUY" class="on">buy</button>
+            <button data-side="SELL">sell</button>
+          </div>
+        </div>
+        <label class="ticket-row"><span>stop</span><input id="inStop" type="number" step="0.1" placeholder="4396.0"></label>
+        <label class="ticket-row"><span>target</span><input id="inTarget" type="number" step="0.1" placeholder="4412.0"></label>
+        <label class="ticket-row"><span>risk %</span><input id="inRisk" type="number" step="0.05" value="0.5"></label>
+        <div class="ticket-calc" id="ticketCalc">size —</div>
+        <div class="ticket-actions">
+          <button class="primary" id="btnPlace">Place order</button>
+          <button class="ghost-btn" id="btnSuggest">Use engine's</button>
+        </div>
+        <div class="ticket-msg" id="ticketMsg"></div>
+      </div>
+    </div>
+
+    <!-- account -->
+    <div class="panel glass">
+      <h3>Account</h3>
+      <p class="panel-sub">paper — every fill crosses the spread</p>
+      <div class="stat-grid" id="accountGrid"></div>
+      <div class="positions" id="positions"></div>
+      <button class="ghost-btn wide" id="btnReset">Reset paper account</button>
+    </div>
+  </section>
+
+  <!-- ── court ────────────────────────────────────────────────────── -->
+  <section class="panel glass wide-panel">
+    <div class="court-head">
+      <div>
+        <h3>The court</h3>
+        <p class="panel-sub">every pattern on trial · stop before target · timeouts recorded · costs charged</p>
+      </div>
+      <div class="court-summary" id="courtSummary"></div>
+    </div>
+    <canvas id="equity" class="equity"></canvas>
+    <div class="table-wrap"><table class="court-table" id="courtTable"></table></div>
+    <div class="split">
+      <div><h4>By session</h4><div id="sessTable" class="mini-table"></div></div>
+      <div><h4>By destination</h4><div id="tgtTable" class="mini-table"></div></div>
+    </div>
+    <p class="caveat" id="caveat"></p>
+  </section>
+
+  <!-- ── tape ─────────────────────────────────────────────────────── -->
+  <section class="panel glass wide-panel">
+    <h3>Tape</h3>
+    <p class="panel-sub">what the engine saw, in order</p>
+    <div class="tape" id="tape"></div>
+  </section>
+  <!-- ── the lab: what would this knob have been worth? ───────────── -->
+  <section class="panel glass wide-panel" id="lab" hidden>
+    <div class="court-head">
+      <div>
+        <h3>The lab</h3>
+        <p class="panel-sub">change one thing, re-run the whole court on the same bars, and read what it was worth</p>
+      </div>
+      <div class="lab-controls">
+        <select id="labParam"></select>
+        <input id="labValues" placeholder="0, 1, 2, 3">
+        <button class="primary" id="labRun">Run sweep</button>
+      </div>
+    </div>
+    <div class="table-wrap"><table class="court-table" id="labTable"></table></div>
+    <p class="caveat" id="labCaveat"></p>
+  </section>
+</main>
+
+<!-- ── settings drawer ─────────────────────────────────────────────── -->
+<aside class="drawer" id="drawer" hidden>
+  <div class="drawer-head">
+    <div>
+      <h3>Calibration</h3>
+      <p class="panel-sub">every value the engine obeys · changing one moves the hash</p>
+    </div>
+    <button class="ghost-btn" id="drawerClose">Done</button>
+  </div>
+  <div class="preset-row" id="presetRow"></div>
+  <div class="drawer-body" id="cfgForm"></div>
+  <div class="drawer-foot">
+    <span id="cfgHash">hash —</span>
+    <div>
+      <button class="ghost-btn" id="cfgReset">Defaults</button>
+      <button class="primary" id="cfgApply">Apply &amp; re-measure</button>
+    </div>
+  </div>
+</aside>
+<div class="scrim" id="scrim" hidden></div>
+
+<footer>
+  <span>STATION DESK</span>
+  <span id="hashFoot">calibration —</span>
+  <span>fills next bar open · stop checked first · ambiguous bar is a loss</span>
+</footer>
+
+<script src="/js/chart.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
